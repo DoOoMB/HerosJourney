@@ -16,14 +16,7 @@ def main_controller():
     req = request.json.get("request", {}).get("command")  # получаем текст, напечатанный пользователем
 
     # Документацию к запросам и ответам найдёшь на https://yandex.ru/dev/dialogs/alice/doc/
-    resp = {
-            "response": {
-                "text": "",
-                "end_session": False
-            },
-            "version": "1.0"
-        }
-
+    resp = Answers.empty()
     # Если текст, введённый пользователем, совпадает с вариантом ответа или его синонимами, то присваеваем переменнной
     # с ответом соответствующий json файл.
     if req in questions["о навыке"]:
@@ -37,6 +30,7 @@ class Answers:
 
     @staticmethod  # Этот декоратор делает метод статическим, т.е. его можно вызывать без экземпляра класса.
     def hello():
+        """Приветствие."""
         resp = {
             "response": {
                 "text": "Приветствую! Это мой новый навык, который позволит вам окунуться "
@@ -46,6 +40,18 @@ class Answers:
             "version": "1.0"
         }
         return resp  # отправляем ответ сервера
+
+    @staticmethod
+    def empty():
+        """Пустой ответ."""
+        resp = {
+            "response": {
+                "text": "",
+                "end_session": False
+            },
+            "version": "1.0"
+        }
+        return resp
 
 
 app.run("0.0.0.0", port=5000, debug=True)  # запускаем веб-приложение

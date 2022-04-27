@@ -1,5 +1,6 @@
 from flask import Flask, request  # дока фласка: https://flask.palletsprojects.com/en/2.1.x/
 from Answers import *
+from DataBaseManager import Manager
 
 # Создаём экземпляр класса Flask для управления фреймворком.
 app = Flask(__name__)

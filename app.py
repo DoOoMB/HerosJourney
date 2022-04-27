@@ -1,4 +1,5 @@
 from flask import Flask, request  # дока фласка: https://flask.palletsprojects.com/en/2.1.x/
+from Answers import *
 
 # Создаём экземпляр класса Flask для управления фреймворком.
 app = Flask(__name__)
@@ -22,36 +23,6 @@ def main_controller():
     if req in questions["о навыке"]:
         resp = Answers.hello()  # Вызываем метод hello(), возвращающий нам ответ-приветствие.
     return resp  # отправляем ответ пользователю
-
-
-class Answers:
-
-    """Этот класс хранит в себе все возможные ответы нашего приложения пользователю."""
-
-    @staticmethod  # Этот декоратор делает метод статическим, т.е. его можно вызывать без экземпляра класса.
-    def hello():
-        """Приветствие."""
-        resp = {
-            "response": {
-                "text": "Приветствую! Это мой новый навык, который позволит вам окунуться "
-                        "в мир невероятных фэнтезийных приключений.",
-                "end_session": False
-            },
-            "version": "1.0"
-        }
-        return resp  # отправляем ответ сервера
-
-    @staticmethod
-    def empty():
-        """Пустой ответ."""
-        resp = {
-            "response": {
-                "text": "",
-                "end_session": False
-            },
-            "version": "1.0"
-        }
-        return resp
 
 
 app.run("0.0.0.0", port=5000, debug=True)  # запускаем веб-приложение

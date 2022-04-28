@@ -30,11 +30,13 @@ def main_controller():
 
     if stage[0][0] == 1:
         if req in Intents.que_ans["продолжить"]:
-            Manager.set_value("StoryStage", 2, user)
+            Manager.set_value("StoryStage", 3, user)
             return Answers.intro()
         elif req in Intents.que_ans["выход"]:
             Manager.set_value("IsComeBack", 1, user)
             return Answers.bye()
+        elif req in Intents.que_ans["о навыке"]:
+            return Answers.hello()
         else:
             return Answers.not_heard()
 
@@ -42,6 +44,8 @@ def main_controller():
         if req in Intents.que_ans["выход"]:
             Manager.set_value("IsComeBack", 1, user)
             return Answers.bye()
+        elif req in Intents.que_ans["о навыке"]:
+            return Answers.hello()
         Manager.set_value("StoryStage", 3, user)
         return Answers.intro()
 

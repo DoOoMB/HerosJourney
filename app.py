@@ -1,30 +1,54 @@
 from flask import Flask, request  # дока фласка: https://flask.palletsprojects.com/en/2.1.x/
 from Answers import *
 from DataBaseManager import Manager
+from Intents import Intents
 
 # Создаём экземпляр класса Flask для управления фреймворком.
 app = Flask(__name__)
-
-# Возможные ответы пользователя и их синонимы.
-questions = {
-    "о навыке": ["для чего ты", "кто ты", "что умеешь", "что", "о навыке"]
-}
 
 
 # Отправляем пост-запрос на сервер, с целью отображения контента.
 # За это отвечает декоратор
 @app.route("/alice", methods=["POST"])
 def main_controller():
+
     req = request.json.get("request", {}).get("command")  # получаем текст, напечатанный пользователем
+    user = request.json.get("session", {}).get("user", {}).get("user_id")
+    stage = Manager.get_value("StoryStage", user)
+    if not Manager.get_value("UserId", user):
+        Manager.create_row(user)
+        Manager.set_value("StoryStage", 1, user)
+        return Answers.hello()
+    elif stage[0][0] == 0:
+        Manager.set_value("StoryStage", 1, user)
+        return Answers.hello()
+    elif Manager.get_value("IsComeBack", user)[0][0] == 1:
+        if stage[0][0] in Intents.changes:
+            Manager.set_value("StoryStage", stage[0][0] - 1, user)
+        Manager.set_value("IsComeBack", 0, user)
+        return Answers.hello()
 
-    # Документацию к запросам и ответам найдёшь на https://yandex.ru/dev/dialogs/alice/doc/
-    resp = Answers.empty()
-    # Если текст, введённый пользователем, совпадает с вариантом ответа или его синонимами, то присваеваем переменнной
-    # с ответом соответствующий json файл.
-    if req in questions["о навыке"]:
-        resp = Answers.hello()  # Вызываем метод hello(), возвращающий нам ответ-приветствие.
-    return resp  # отправляем ответ пользователю
+    if stage[0][0] == 1:
+        if req in Intents.que_ans["продолжить"]:
+            Manager.set_value("StoryStage", 2, user)
+            return Answers.intro()
+        elif req in Intents.que_ans["выход"]:
+            Manager.set_value("IsComeBack", 1, user)
+            return Answers.bye()
+        else:
+            return Answers.not_heard()
 
+    if stage[0][0] == 2:
+        if req in Intents.que_ans["выход"]:
+            Manager.set_value("IsComeBack", 1, user)
+            return Answers.bye()
+        Manager.set_value("StoryStage", 3, user)
+        return Answers.intro()
 
-app.run("0.0.0.0", port=5000, debug=True)  # запускаем веб-приложение
+    if req in Intents.que_ans["выход"]:
+        Manager.set_value("IsComeBack", 1, user)
+        return Answers.bye()
+
+    return Answers.empty()
+
 

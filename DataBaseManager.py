@@ -14,7 +14,10 @@ class Manager:
     def set_value(col, val, user_id):
         conn = sqlite3.connect("Clients.db")
         cur = conn.cursor()
-        cur.execute(f"UPDATE ClientData SET {col} = {val} WHERE UserId = '{user_id}'")
+        if col == "Inventory" or col == "Enemies" or col == "EnemyDamage":
+            cur.execute(f"UPDATE ClientData SET {col} = '{val}' WHERE UserId = '{user_id}'")
+        else:
+            cur.execute(f"UPDATE ClientData SET {col} = {val} WHERE UserId = '{user_id}'")
         conn.commit()
 
     @staticmethod
@@ -34,3 +37,4 @@ class Manager:
     @staticmethod
     def set_default(user_id):
         Manager.del_row(user_id)
+    
